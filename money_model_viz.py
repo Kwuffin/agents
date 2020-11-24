@@ -1,5 +1,6 @@
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer, VisualizationElement
+from mesa.visualization.UserParam import UserSettableParameter
 from money_model import *
 import numpy as np
 
@@ -50,7 +51,11 @@ def agent_portrayal(agent):
     return portrayal
 
 
-grid = CanvasGrid(agent_portrayal, 100, 100, 800, 800)
+# Eigen toevoeging
+agent_amount_slider = UserSettableParameter("slider", "Amount of agents", value=200, min_value=200, max_value=1000, step=1)
+
+
+grid = CanvasGrid(agent_portrayal, 30, 30, 800, 800)
 
 chart = ChartModule([{"Label": "Gini",
                       "Color": "Black"}],
@@ -61,8 +66,7 @@ histogram = HistogramModule(list(range(10)), 200, 500)
 server = ModularServer(MoneyModel,
                        [grid, histogram, chart],
                        "Money Model",
-                       {"N":100, "width":10, "height":10})
-server.launch()
+                       {"N":agent_amount_slider, "width":30, "height":30})
 
 server.port = 8521  # The default
 server.launch()
