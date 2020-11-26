@@ -51,8 +51,12 @@ def agent_portrayal(agent):
     return portrayal
 
 
-# Eigen toevoeging
-agent_amount_slider = UserSettableParameter("slider", "Amount of agents", value=200, min_value=200, max_value=1000, step=1)
+# Eigen toevoegingen
+textbox1 = UserSettableParameter('static_text', value="Deze parameters hebben pas effect als de pagina herlaad wordt (F5).")
+
+agent_amount_slider = UserSettableParameter("slider", "Amount of agents", value=200, min_value=100, max_value=1000, step=1)
+
+goNegative = UserSettableParameter('checkbox', 'Agents can go negative in wealth.', value=False)
 
 
 grid = CanvasGrid(agent_portrayal, 30, 30, 800, 800)
@@ -66,7 +70,7 @@ histogram = HistogramModule(list(range(10)), 200, 500)
 server = ModularServer(MoneyModel,
                        [grid, histogram, chart],
                        "Money Model",
-                       {"N":agent_amount_slider, "width":30, "height":30})
+                       {"N":agent_amount_slider, "width":30, "height":30, "neg":goNegative})
 
 server.port = 8521  # The default
 server.launch()

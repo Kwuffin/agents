@@ -2,7 +2,7 @@ from mesa import Model, Agent
 from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
-from random import randint, getrandbits
+from random import randint
 
 
 def compute_gini(model):
@@ -15,9 +15,10 @@ def compute_gini(model):
 
 class MoneyAgent(Agent):
     """ An agent with fixed initial wealth."""
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, isNegative):
         super().__init__(unique_id, model)
         self.wealth = randint(0, 2)
+        self.negative = isNegative
 
     def move(self):
         possible_steps = self.model.grid.get_neighborhood(
@@ -36,8 +37,9 @@ class MoneyAgent(Agent):
 
     def step(self):
         self.move()
-        if self.wealth > 0:
-            self.give_money()
+        if self.negative:
+            if self.wealth > 0:
+                self.give_money()
 
 
 class MoneyModel(Model):
@@ -49,7 +51,7 @@ class MoneyModel(Model):
     Grijs: 1-2
     Groen: 3-5
     Blauw: >5"""
-    def __init__(self, N, width, height):
+    def __init__(self, N, width, height, neg):
         self.num_agents = N
         self.grid = MultiGrid(width, height, True)
         self.schedule = RandomActivation(self)
@@ -57,7 +59,7 @@ class MoneyModel(Model):
 
         # Create agents
         for i in range(self.num_agents):
-            a = MoneyAgent(i, self)
+            a = MoneyAgent(i, self, neg)
             self.schedule.add(a)
             # Add the agent to a random grid cell
             x = self.random.randrange(self.grid.width)
